@@ -32,7 +32,7 @@ package object rio {
             }
             val constraints: Seq[Formula] = parameterMap.get("$$constraints").fold(Seq.empty[Formula]){
               case c@TFF.AtomicTerm("$$input", Seq()) => Seq(interpretTFFTermAsFormula(c))
-              case TFF.Tuple(elements) if elements.nonEmpty => elements.map(interpretTFFTermAsFormula)
+              case TFF.Tuple(elements) => elements.map(interpretTFFTermAsFormula)
               case value => throw new MalformedLogicSpecificationException(s"Only tuples of formulas are allowed as " +
                 s"values for parameter '$$$$constraints', but '${value.pretty}' was given.")
             }
