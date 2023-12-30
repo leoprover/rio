@@ -8,7 +8,7 @@ lazy val rio = (project in file("."))
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
-      "-target:11",
+      "-release:11",
     ),
     Compile/unmanagedResourceDirectories += baseDirectory.value / "contrib",
     Compile/mainClass  := Some("net.aurelee.rio.Main"),
