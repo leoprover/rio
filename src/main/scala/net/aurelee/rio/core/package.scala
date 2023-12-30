@@ -193,7 +193,7 @@ package object core {
         val next0:Clause = unprocessed.dequeue()
         val next: Clause = clauseSimp(next0)
         if (isTrivial(next)) { /* skip */ }
-        else if (isFalse(next)) { unprocessed.clear; processed.clear; processed += next }
+        else if (isFalse(next)) { unprocessed.clear(); processed.clear(); processed += next }
         else {
           if (processed.exists(p => p.size < next.size && p.forall(lit => next.contains(lit)))) {
             /* skip next clause, it's subsumbed by some clause in processed */
