@@ -28,7 +28,8 @@ are returned. For details, cf. we refer to [1].
 
 `rio` provides a TPTP-aligned [3] automated reasoning system for unconstrained and
 constrained I/O logics based on the operators out<sub>i</sub> and out<sub>i</sub><sup>+</sup>,
-1 ≤ i ≤ 4. It is implemented as a Scala application and based on the
+1 ≤ i ≤ 4, as well as preference-based outputs.
+It is implemented as a Scala application and based on the
 `scala-tptp-parser` [4].
 
 In short, the system allows you to specify a set of conditional norms and a number
@@ -38,8 +39,7 @@ as formulas) can be derived. `rio` can also be used to infer the set of detached
 obligations instead of checking detachment of given ones. See [Usage](#usage) below
 for details.
 
-It is inspired by the decision procedures introduced in [5], though the actual
-procedures differ.
+It is inspired by the decision procedures introduced in [5].
 
 
 ## Installation
@@ -340,7 +340,7 @@ In particular, `rio` uses
 
 [4] Steen, A.: `scala-tptp-parser` (Version v1.2). Zenodo, 2021. DOI: http://doi.org/10.5281/zenodo.4468959
 
-[5] Steen, A.: Goal-Directed Decision Procedures for Input/Output Logics. In 15th International Conference on Deontic Logic and Normative Systems (DEON 2020/2021, Munich), Fenrong Liu, Alessandra Marra, Paul Portner, and Frederik Van De Putte (Eds.), College Publications, London, 2021. (to appear). See: http://www.collegepublications.co.uk/DEON/?00003
+[5] Steen, A.: A Reduction of Input/Output Logics to SAT, arXiv:2508.16242 [cs.LO]. DOI: https://doi.org/10.48550/arXiv.2508.16242
 
 [6] Parent, X.: Moral particularism in the light of deontic logic. Artif. Intell. Law 19(2-3): 75-98 (2011)
 
