@@ -3,13 +3,13 @@ Author: [Alexander Steen](https://www.alexandersteen.de/)
 
 You may cite the tool as: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4540272.svg)](https://doi.org/10.5281/zenodo.4540272)
 
-Input/Output (I/O) logics have been devised by D. Makinson and L. van der Torre [1]
+Input/Output (I/O) logics have been devised by D. Makinson and L. van der Torre [^1]
 as a class of formal systems for norm-based deontic reasoning. Intuitively,
 they formalize the detachment process of obligations (referred to as *the output*)
 from a given set of conditional norms and a specific situation (called *the input*).
 It differs from other deontic logics (e.g., based on modal logics or extensions of it)
 in the sense that the norms themselves are not part of the object logic and hence do
-not carry truth values. Constrained I/O logic [2]
+not carry truth values. Constrained I/O logic [^2]
 extend plain I/O logics by restricting the output set to be consistent with respect to
 a given set of formulas, addressing deontic paradoxes such as contrary-to-duty situations
 and other dilemmas.
@@ -22,15 +22,15 @@ respectively, with (cumulative) transitivity. For each operator there exists a s
 variant out<sub>i</sub><sup>+</sup>. Constrained I/O logic filter excess output that is
 inconsistent wrt. a set of constraints. Preferred output further filters the set
 of consistent outputs such that only preferred sets (wrt. to given preference relation)
-are returned. For details, cf. we refer to [1].
+are returned. For details, cf. we refer to [^1].
 
 ## The Tool
 
-`rio` provides a TPTP-aligned [3] automated reasoning system for unconstrained and
+`rio` provides a TPTP-aligned [^3] automated reasoning system for unconstrained and
 constrained I/O logics based on the operators out<sub>i</sub> and out<sub>i</sub><sup>+</sup>,
 1 ≤ i ≤ 4, as well as preference-based outputs.
 It is implemented as a Scala application and based on the
-`scala-tptp-parser` [4].
+`scala-tptp-parser` [^4].
 
 In short, the system allows you to specify a set of conditional norms and a number
 of inputs (each of which describing aspects of the current situational context),
@@ -39,7 +39,7 @@ as formulas) can be derived. `rio` can also be used to infer the set of detached
 obligations instead of checking detachment of given ones. See [Usage](#usage) below
 for details.
 
-It is inspired by the decision procedures introduced in [5].
+It is inspired by the decision procedures introduced in [^5].
 
 
 ## Installation
@@ -267,7 +267,7 @@ thf(input1, hypothesis, ~helping).
 
 In this case, the output is constrained to be the credulous output aggregate of 
 all maximally consistent norm families wrt. detachment via out<sub>3</sub>
-and the constraint `~helping`. See [2] for the theoretical details.
+and the constraint `~helping`. See [^2] for the theoretical details.
 
 This problem file gives a consistent output set as follows:
 
@@ -299,7 +299,7 @@ tff(norm3, axiom, {$$norm} @ ($true, heatingOn) ).
 In this case, the output is constrained to be the credulous output aggregate of
 all maximally consistent norm families wrt. detachment via out<sub>3</sub>
 (and the empty set of constraints). Additionally, the preference ordering
-`name1 > name2 > name3` is declared. See [6] for details.
+`name1 > name2 > name3` is declared. See [^6] for details.
 
 This problem file gives a consistent output set as follows:
 
@@ -332,15 +332,15 @@ In particular, `rio` uses
 
 ## References
 
-[1] Makinson, D., van der Torre, L.W.N.: Input/Output Logics. J. Philosophical Logic 29(4), 383–408 (2000). https://doi.org/10.1023/A:1004748624537
+[^1]: Makinson, D., van der Torre, L.W.N.: Input/Output Logics. J. Philosophical Logic 29(4), 383–408 (2000). https://doi.org/10.1023/A:1004748624537
 
-[2] Makinson, D., van der Torre, L.W.N.: Constraints for Input/Output Logics. J. Philos. Log. 30(2): 155-185 (2001). https://doi.org/10.1023/A:1017599526096
+[^2]: Makinson, D., van der Torre, L.W.N.: Constraints for Input/Output Logics. J. Philos. Log. 30(2): 155-185 (2001). https://doi.org/10.1023/A:1017599526096
 
-[3] Sutcliffe, G, and Suttner, C.: The TPTP Problem Library for Automated Theorem Proving. http://tptp.org.
+[^3]: Sutcliffe, G, and Suttner, C.: The TPTP Problem Library for Automated Theorem Proving. http://tptp.org.
 
-[4] Steen, A.: `scala-tptp-parser` (Version v1.2). Zenodo, 2021. DOI: http://doi.org/10.5281/zenodo.4468959
+[^4]: Steen, A.: `scala-tptp-parser` (Version v1.2). Zenodo, 2021. DOI: http://doi.org/10.5281/zenodo.4468959
 
-[5] Steen, A.: A Reduction of Input/Output Logics to SAT, arXiv:2508.16242 [cs.LO]. DOI: https://doi.org/10.48550/arXiv.2508.16242
+[^5]: Steen, A.: A Reduction of Input/Output Logics to SAT, arXiv:2508.16242 [cs.LO]. DOI: https://doi.org/10.48550/arXiv.2508.16242
 
-[6] Parent, X.: Moral particularism in the light of deontic logic. Artif. Intell. Law 19(2-3): 75-98 (2011)
+[^6]: Parent, X.: Moral particularism in the light of deontic logic. Artif. Intell. Law 19(2-3): 75-98 (2011)
 
