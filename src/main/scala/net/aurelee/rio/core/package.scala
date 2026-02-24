@@ -271,7 +271,7 @@ package object core {
   final def interpretNorm(formula: TPTP.TFF.Formula): Norm = {
     import TPTP.TFF.{NonclassicalPolyaryFormula, NonclassicalLongOperator}
     formula match {
-      case NonclassicalPolyaryFormula(NonclassicalLongOperator("$$norm", Seq()), Seq(body, head)) =>
+      case NonclassicalPolyaryFormula(NonclassicalLongOperator("$$norm", None, Seq()), Seq(body, head)) =>
         val left = interpretTFFFormula(body)
         val right = interpretTFFFormula(head)
         (left, right)
