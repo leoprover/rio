@@ -37,11 +37,17 @@ object Reasoner {
         }
       case formula => throw new UnsupportedOperationException(s"Only TFF logic formulas are supported, but formula '${formula.name}' is ${formula.formulaType.toString}.")
     }
-    val preferenceRelation: Option[PreferenceRelation[Norm]] = config.preferenceRelation.map { list =>
-      val namesToNorms: Seq[Seq[Norm]] = list.map { level =>
-        level.map { normName => axiomFormulas.getOrElse(normName, throw new SemanticsException(s"Unknown norm '$normName' in preference declaration."))}
+    if (config.preferenceRelation.nonEmpty && config.constrained.isEmpty)
+      throw new SemanticsException("Preferences require a constrained output mode.")
+    val preferenceRelation: Option[PreferenceRelation[String]] = config.preferenceRelation.map { list =>
+      val names = list.flatten
+      names.foreach { normName =>
+        if (!axiomFormulas.contains(normName))
+          throw new SemanticsException(s"Unknown norm '$normName' in preference declaration.")
       }
-      PreferenceRelation.fromSeqs(namesToNorms)
+      if (names.distinct.size != names.size)
+        throw new SemanticsException("Each norm name may occur only once in a preference declaration.")
+      PreferenceRelation.fromSeqs(list)
     }
 
     // Output is the gross output if no constraints are used. Otherwise handle the constrained case.
@@ -53,16 +59,19 @@ object Reasoner {
         }
         val maxFamily = reasoner.maxFamilyWithNames(config.operator, hypFormulas.toMap, axiomFormulas.toMap, constraints, config.throughput)
         println(s"% Info: maxFamily = ${maxFamily.map(x => x.keys.mkString("{", ",", "}")).mkString("[", ", ", "]")}")
-        val maxFamilyAsFormulas = maxFamily.map(_.values.toSeq)
         val selectedSubsetOfMaxFamily = preferenceRelation match {
           case Some(rel) =>
             val liftedRelation = PreferenceRelation.brassLifting(rel)
-            val result = PreferenceRelation.getMaximals(liftedRelation, maxFamilyAsFormulas)
-            println(s"% Info: prefFamily = ${result.map(x => x.map(prettyNorm).mkString("(", ",", ")")).mkString("[", ", ", "]")}")
+            val namedRelation = new PreferenceRelation[Map[String, Norm]] {
+              override def greaterThanOrEqual(left: Map[String, Norm], right: Map[String, Norm]): Boolean =
+                liftedRelation.greaterThanOrEqual(left.keys.toSeq, right.keys.toSeq)
+            }
+            val result = PreferenceRelation.getMaximals(namedRelation, maxFamily)
+            println(s"% Info: prefFamily = ${result.map(x => x.keys.mkString("{", ",", "}")).mkString("[", ", ", "]")}")
             result
-          case None => maxFamilyAsFormulas
+          case None => maxFamily
         }
-        val outFamily = reasoner.outFamily(selectedSubsetOfMaxFamily, config.operator, hypFormulas.values.toVector, config.throughput)
+        val outFamily = reasoner.outFamily(selectedSubsetOfMaxFamily.map(_.values.toSeq), config.operator, hypFormulas.values.toVector, config.throughput)
         println(s"% Info: outFamily = ${outFamily.map(x => x.map(_.pretty).mkString("{", ",", "}")).mkString("[", ", ", "]")}")
 //        println(s"outFamily = ${outFamily.map(x => x.map(_.pretty).mkString("[", ",", "]")).mkString("{", ",\n", "}")}")
         outFamily

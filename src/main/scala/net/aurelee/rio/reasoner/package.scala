@@ -34,7 +34,7 @@ package object reasoner {
         override def greaterThanOrEqual(left: A, right: A): Boolean = {
           (normRanking.get(left), normRanking.get(right)) match {
             case (Some(leftRanking), Some(rightRanking)) => leftRanking <= rightRanking
-            case _ => false
+            case _ => left == right
           }
         }
 
