@@ -1,6 +1,6 @@
 package net.aurelee.rio
 
-import net.aurelee.rio.core.{CNF, Formula, Norm, OutOperator, body, cnf, cnfFormulaToMultiset, head, mkConjs, mkImpl, prettyNorm}
+import net.aurelee.rio.core.{CNF, Formula, Norm, OutOperator, body, cnf, cnfFormulaToMultiset, head, mkConjs, mkImpl, mkNeg, prettyNorm}
 import net.aurelee.rio.sat.{allMUSes, consequence, consistent}
 
 package object reasoner {
@@ -80,18 +80,38 @@ package object reasoner {
     norms.filter(n => consequence(input, body(n)))
   }
 
-  final def getMinimallyWeaklyTriggeredSets(input: Seq[Formula], cnfOfNegatedBodies: Seq[CNF]): Seq[CNF] = {
-    val cnfOfInput: CNF = cnfFormulaToMultiset(cnf(mkConjs(input)))
-//    println(s"cnfOfInput = ${cnfOfInput.toString()}")
-    val negatedBodiesInput = cnfOfNegatedBodies.flatten
-    val musInput = cnfOfInput.concat(negatedBodiesInput)
-    val muses = allMUSes(musInput)
-    muses.map { mus =>
-      //  if MUS is completely contained in input A then A is contradictory and everything follows, i.e., return empty MUS.
-      if (cnfOfInput.nonEmpty && mus.forall(cnfOfInput.contains)) {
-        Seq.empty
-      } else mus.intersect(negatedBodiesInput) // Filter from muses only those that come from negatedBodies (might not be distinct from input, though)
+  /** Encodes/gives positions in cnfOfNegatedBodies.
+    * Fresh selectors distinguish both shared clauses and partial uses of a body.
+    */
+  final def getMinimallyWeaklyTriggeredSets(input: Seq[Formula], cnfOfNegatedBodies: Seq[CNF]): Seq[Set[Int]] = {
+    if (cnfOfNegatedBodies.isEmpty) return Seq.empty
+    if (!consistent(input)) return cnfOfNegatedBodies.indices.map(i => Set(i))
+
+    val usedNames = collection.mutable.Set.empty[String]
+    input.foreach(f => usedNames ++= f.symbols)
+    cnfOfNegatedBodies.flatten.flatten.foreach(f => usedNames ++= f.symbols)
+    var nextName = 0
+    val selectors = cnfOfNegatedBodies.indices.map { _ =>
+      var name = s"__rio_mus_selector_$nextName"
+      while (usedNames(name)) {
+        nextName += 1
+        name = s"__rio_mus_selector_$nextName"
+      }
+      usedNames += name
+      nextName += 1
+      net.aurelee.rio.core.PLProp(name)
     }
+    val inputCNF = cnfFormulaToMultiset(cnf(mkConjs(input)))
+    val guarded = cnfOfNegatedBodies.zip(selectors).flatMap { case (clauses, selector) =>
+      clauses.map(clause => mkNeg(selector) +: clause)
+    }
+    val units: CNF = selectors.map(s => Seq[Formula](s))
+    val supports = allMUSes(inputCNF ++ guarded ++ units).map { mus =>
+      val support = selectors.indices.filter(i => mus.contains(Seq(selectors(i)))).toSet
+      if (support.isEmpty) throw new IllegalStateException("MUST returned a support-free MUS for consistent input")
+      support
+    }.distinct
+    supports.filterNot(s => supports.exists(t => t.size < s.size && t.subsetOf(s)))
   }
 
   final def maxFamily(outOperator: OutOperator,
