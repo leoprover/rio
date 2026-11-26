@@ -53,7 +53,7 @@ final case class PLConj(left: PLFormula, right: PLFormula) extends PLFormula {
   override def conjs: Seq[PLFormula] = Vector.concat(left.conjs, right.conjs)
   override def disjs: Seq[PLFormula] = Vector(this)
   override def symbols: Set[String] = left.symbols union right.symbols
-  override def replace(what: PLFormula, by: PLFormula): PLFormula = if (this == what) by else PLDisj(left.replace(what, by),right.replace(what, by))
+  override def replace(what: PLFormula, by: PLFormula): PLFormula = if (this == what) by else PLConj(left.replace(what, by),right.replace(what, by))
 }
 final case class PLProp(name: String) extends PLFormula {
   override def pretty: String = name
