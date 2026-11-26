@@ -11,7 +11,7 @@ package net.aurelee.rio.sat
   * because some Scala versions do not support private native functions.
   *
   * @author Hans-Jörg Schurr
- *  @note Ported to JNA library by Alexander Steen on 2021
+ *  @note Ported to JNA library by Alexander Steen on 2021, a few fixes in 11/2026.
   * @since 7/27/16.
   */
 sealed abstract class PicoSAT(enableTracing: Boolean)  {
@@ -268,7 +268,19 @@ sealed abstract class PicoSAT(enableTracing: Boolean)  {
     * @return An array of failed assumption.
     */
   def failedAssumptions: List[Int] = {
-    lib.picosat_failed_assumptions(context)
+    // explicitly reconstruct list
+    val pointer = lib.picosat_failed_assumptions(context)
+    val result = List.newBuilder[Int]
+    if (pointer != null) {
+      var offset = 0L
+      var literal = pointer.getInt(offset)
+      while (literal != 0) {
+        result += literal
+        offset += java.lang.Integer.BYTES
+        literal = pointer.getInt(offset)
+      }
+    }
+    result.result()
   }
 
   /**
@@ -358,7 +370,7 @@ sealed abstract class PicoSAT(enableTracing: Boolean)  {
     def picosat_deref_toplevel(context: Long, lit: Int) : Int
     def picosat_inconsistent(context: Long) : Int
     def picosat_failed_assumption(context: Long, lit: Int) : Int
-    def picosat_failed_assumptions(context: Long) : List[Int]
+    def picosat_failed_assumptions(context: Long) : com.sun.jna.Pointer
     def picosat_changed(context: Long) : Int
     def picosat_coreclause(context: Long, clauseIdx: Int) : Int
     def picosat_corelit(context: Long, lit: Int) : Int

@@ -160,6 +160,17 @@ class PicoSatTest extends AnyFunSuite {
     println("Test success: Assumptions.")
   }
 
+  test("Failed assumptions are copied before the native context is reset") {
+    val context = PicoSAT(true)
+    loadSatProblem(context)
+    context.assume(1)
+    context.assume(2)
+    assert(context.solve() == PicoSAT.UNSAT)
+    val snapshot = context.failedAssumptions
+    context.reset()
+    assert(snapshot == List(1, 2))
+  }
+
   test("Changed") {
     val context = PicoSAT(true)
     loadSatProblem(context)
