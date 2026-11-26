@@ -327,6 +327,8 @@ package object core {
   final def interpretTFFTermAsFormula(term: TPTP.TFF.Term): Formula = {
     import leo.datastructures.TPTP.TFF
     term match {
+      case TFF.AtomicTerm("$true", Seq()) => PLTop
+      case TFF.AtomicTerm("$false", Seq()) => PLBottom
       case TFF.AtomicTerm(f, Seq()) => mkProp(f)
       case TFF.FormulaTerm(formula) => interpretTFFFormula(formula)
       case _ => throw new SemanticsException(s"Term '${term.pretty}' cannot be interpreted as formula or it lies outside of the propositional fragment of TFF.")
