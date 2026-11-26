@@ -144,7 +144,8 @@ Alternatively, semantics parameters can also be passed using command-line argume
 `rio` gives SZS status results as follows:
 
 + SZS status Success if the problem does not contain conjectured outputs (formulas of role `conjecture`).
-  In this case, a SZS result of type ListOfFormulae containing the finite base of the output set is given.
+  Ordinary and skeptical output use one ListOfFormulae block containing a finite basis.
+  Credulous output uses a separate block for each individual basis, preceded by the number of alternatives.
 + SZS status Theorem if the problem contains a conjectured output (a formula of role `conjecture`) and
   the conjectured output is indeed in the output set.
 + SZS status CounterSatisfiable if the problem contains a conjectured output (a formula of role `conjecture`) and
@@ -164,7 +165,7 @@ http://tptp.org/TPTP/Proposals/LogicSpecification.html for details.
 | `$$throughput`  | `$true` or `$false`                           | Enable/Disable throughout (default: `$false`)                                                                                                                                                                                                                                                                                                       |
 | `$$constrained` | `$$credulous` or `$$skeptical`                | Enable constrained output operators with credulous or skeptical net output function, respectively (default: unset)                                                                                                                                                                                                                                  |
 | `$$constraints` | `[<list of formulas>]`                        | Set the constraints for constrained output. Ignored of `$$constrained` is not set (default: unset).                                                                                                                                                                                                                                                 |
-| `$$preference`  | `[<list of name tuples>]`                     | A comma-separated list of tuples of the form `[name1,name2,...]`, where each identifier refers to the name of a norm in the problem file. Earlier norms are preferred over later norms, norms in the same tuple are equally preferred. Tuple symbols may be dropped if they are singletons. Ignored of `$$constrained` is not set (default: unset). |
+| `$$preference`  | `[<list of name tuples>]`                     | A comma-separated list of tuples of the form `[name1,name2,...]`, where each identifier refers to the name of a norm in the problem file. Earlier norms are preferred over later norms, norms in the same tuple are equally preferred. Tuple symbols may be dropped if they are singletons. Requires `$$constrained`; unknown or repeated names are rejected (default: unset). |
 
 ### Problem contents
 
@@ -274,15 +275,20 @@ This problem file gives a consistent output set as follows:
 
 ```
 % SZS status Success for out3-constrained.p
-% SZS output start ListOfFormulae for out3-constrained.p
+% Credulous output: union of 1 theory; blocks are separate bases.
+% SZS output start ListOfFormulae for out3-constrained.p: credulous alternative 1
 ~ telling
-% SZS output end ListOfFormulae for out3-constrained.p
+% SZS output end ListOfFormulae for out3-constrained.p: credulous alternative 1
 ```
 
 ### Use case 4: Preferred output
 
 In the constrained case, a preference ordering can optionally be imposed to
 further restrict the generated outputs. 
+
+Preferences compare source norm names, even when different names carry the
+same body and head. Each name may occur only once in the preference declaration;
+unknown names are rejected. Unlisted names remain incomparable. A preference declaration requires an explicit constrained output mode.
 
 ```
 tff(semantics, logic, (
@@ -306,16 +312,17 @@ This problem file gives a consistent output set as follows:
 
 ```
 % SZS status Success for examples/preferred.p
-% SZS output start ListOfFormulae for examples/preferred.p
+% Credulous output: union of 1 theory; blocks are separate bases.
+% SZS output start ListOfFormulae for examples/preferred.p: credulous alternative 1
 windowOpen
-% SZS output end ListOfFormulae for examples/preferred.p
+% SZS output end ListOfFormulae for examples/preferred.p: credulous alternative 1
 ```
  
 ## Usage as library/API
 
 `rio`'s reasoning procedure can also be invoked by adding the .jar file to
 your project's classpath and calling the `Reasoner.apply` method directly.
- 
+
 ## License
 
 `rio` is distributed under the BSD 3-Clause license (see LICENSE file),
@@ -340,7 +347,7 @@ In particular, `rio` uses
 
 [^4]: Steen, A.: `scala-tptp-parser` (Version v1.2). Zenodo, 2021. DOI: http://doi.org/10.5281/zenodo.4468959
 
-[^5]: Steen, A.: A Reduction of Input/Output Logics to SAT, arXiv:2508.16242 [cs.LO]. DOI: https://doi.org/10.48550/arXiv.2508.16242
+[^5]: Steen, A.: A Reduction of Input/Output Logics to SAT, Journal of Applied Non-Classical Logics. DOI: https://doi.org/10.1080/11663081.2026.2658659
 
 [^6]: Parent, X.: Moral particularism in the light of deontic logic. Artif. Intell. Law 19(2-3): 75-98 (2011)
 
