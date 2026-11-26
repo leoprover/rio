@@ -7,6 +7,8 @@ import net.aurelee.rio.{SemanticsException, reasoner}
 object Reasoner {
   sealed abstract class RioResult
   case class OutputGenerated(output: Seq[Formula]) extends RioResult
+  /** A union of theories, each represented by its own conjunctive basis. */
+  case class OutputFamilyGenerated(outputFamily: Seq[Seq[Formula]]) extends RioResult
   case class OutputVerified(accepted: Seq[(String, Formula)], rejected: Seq[(String, Formula)]) extends RioResult
 
   final def apply(problem: Seq[TPTP.AnnotatedFormula])(config: RioConfig): RioResult = {
@@ -43,8 +45,8 @@ object Reasoner {
     }
 
     // Output is the gross output if no constraints are used. Otherwise handle the constrained case.
-    val outputBasis = config.constrained match {
-      case Some(netOutputFunction) =>
+    val outputFamily = config.constrained match {
+      case Some(_) =>
         val constraints = config.constraints match {
           case Seq(PLProp("$$input")) => hypFormulas.values.toSeq
           case _ => config.constraints
@@ -63,16 +65,20 @@ object Reasoner {
         val outFamily = reasoner.outFamily(selectedSubsetOfMaxFamily, config.operator, hypFormulas.values.toVector, config.throughput)
         println(s"% Info: outFamily = ${outFamily.map(x => x.map(_.pretty).mkString("{", ",", "}")).mkString("[", ", ", "]")}")
 //        println(s"outFamily = ${outFamily.map(x => x.map(_.pretty).mkString("[", ",", "]")).mkString("{", ",\n", "}")}")
-        netOutputFunction(outFamily)
-      case None => config.operator.apply(axiomFormulas.values.toVector, hypFormulas.values.toVector, config.throughput)
+        outFamily
+      case None => Seq(config.operator.apply(axiomFormulas.values.toVector, hypFormulas.values.toVector, config.throughput))
     }
 
-    val simplifiedOutputBasis = interreduce(outputBasis)
+    val simplifiedFamily = outputFamily.map(interreduce)
     if (conjectureFormulas.isEmpty) {
-      OutputGenerated(simplifiedOutputBasis)
+      config.constrained match {
+        case Some(CredulousNetOutput) => OutputFamilyGenerated(simplifiedFamily)
+        case Some(netOutputFunction) => OutputGenerated(interreduce(netOutputFunction(simplifiedFamily)))
+        case None => OutputGenerated(simplifiedFamily.head)
+      }
     } else {
-      import net.aurelee.rio.sat.consequence
-      val (accepted, rejected) = conjectureFormulas.partition(cf => consequence(simplifiedOutputBasis, cf._2))
+      val aggregation = config.constrained.getOrElse(SkepticalNetOutput)
+      val (accepted, rejected) = conjectureFormulas.partition(cf => aggregation.entails(simplifiedFamily, cf._2))
       OutputVerified(accepted.toSeq, rejected.toSeq)
     }
   }

@@ -48,6 +48,16 @@ object Main {
               println(f.pretty)
             }
             println(s"% SZS output end ListOfFormulae for $inputFileName")
+          case Reasoner.OutputFamilyGenerated(family) =>
+            println(s"% SZS status Success for $inputFileName")
+            val noun = if (family.size == 1) "theory" else "theories"
+            println(s"% Credulous output: union of ${family.size} $noun; blocks are separate bases.")
+            family.zipWithIndex.foreach { case (basis, index) =>
+              val member = s"$inputFileName: credulous alternative ${index + 1}"
+              println(s"% SZS output start ListOfFormulae for $member")
+              basis.foreach(f => println(f.pretty))
+              println(s"% SZS output end ListOfFormulae for $member")
+            }
           case Reasoner.OutputVerified(accepted, rejected) =>
             accepted.foreach { case (name, _) =>
               println(s"% SZS status Theorem for $inputFileName: $name")
