@@ -1,10 +1,10 @@
 lazy val rio = (project in file("."))
   .settings(
     name := "rio",
-    version := "1.4",
+    version := "1.5.0",
     description := "A reasoner for Input/Output logics",
     organization := "net.aurelee",
-    scalaVersion := "2.13.18",
+    scalaVersion := "3.9.0",
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
@@ -15,9 +15,9 @@ lazy val rio = (project in file("."))
     assembly/assemblyJarName := s"${name.value}-${version.value}.jar",
 
     licenses += "BSD-3-Clause" -> url("https://opensource.org/licenses/BSD-3-Clause"),
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19" % "test",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.20" % "test",
     libraryDependencies += "net.java.dev.jna" % "jna" % "5.18.1",
-    libraryDependencies += "io.github.leoprover" %% "scala-tptp-parser" % "1.7.3",
+    libraryDependencies += "io.github.leoprover" %% "scala-tptp-parser" % "1.8.0",
     
     nativeImageOptions += s"-H:+UnlockExperimentalVMOptions",
     nativeImageOptions += s"-H:ReflectionConfigurationFiles=${baseDirectory.value / "contrib" / "native-image-configs" / "reflect-config.json"}",

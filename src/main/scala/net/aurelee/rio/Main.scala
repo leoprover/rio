@@ -9,7 +9,7 @@ import java.io.FileNotFoundException
 
 object Main {
   final val name: String = "rio"
-  final val version: String = "1.4"
+  final val version: String = "1.5.0"
 
   private[this] var inputFileName = ""
   private[this] var outOperatorParameter: Option[String] = None

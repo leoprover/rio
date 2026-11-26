@@ -5,5 +5,5 @@ java=java
 if test -n "$JAVA_HOME"; then
     java="$JAVA_HOME/bin/java"
 fi
-exec "$java" $java_args -Xss32m -Xmx1g -jar $MYSELF "$@"
+exec "$java" $java_args -Xss32m -Xmx1g --enable-native-access=ALL-UNNAMED -jar $MYSELF "$@"
 exit 1

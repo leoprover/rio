@@ -8,7 +8,7 @@ all:
 		@echo Building rio ...
 		sbt assembly
 		mkdir bin -p
-		cp target/scala-2.13/rio-*.jar bin/.
+		cp target/scala-3.9.0/rio-*.jar bin/.
 		cat ./contrib/exec_dummy bin/rio-*.jar > bin/rio
 		chmod +x bin/rio
 
