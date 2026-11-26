@@ -2,7 +2,7 @@ package net.aurelee.rio.reasoner
 
 import net.aurelee.rio.core.{CNF, Formula, Norm}
 import net.aurelee.rio.core.OutOperator
-import net.aurelee.rio.core.{cnf, cnfFormulaToMultiset, mkConjs, mkDisjs, mkNeg, heads}
+import net.aurelee.rio.core.{cnf, cnfFormulaToMultiset, mkDisjs, mkNeg}
 
 
 object Out2 extends OutOperator {

@@ -9,7 +9,7 @@ sealed abstract class NetOutputFunction {
 }
 case object CredulousNetOutput extends NetOutputFunction {
   override def apply(outFamily: Seq[Seq[Formula]]): Seq[Formula] =
-    throw new UnsupportedOperationException("Credulous output has no single deductively closed basis; retain the family or use entails")
+    throw new UnsupportedOperationException("Credulous output has no single deductively closed basis; use the family itself or use entails")
 
   override def entails(outFamily: Seq[Seq[Formula]], conjecture: Formula): Boolean =
     outFamily.exists(basis => consequence(basis, conjecture))
